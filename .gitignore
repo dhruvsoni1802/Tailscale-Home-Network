@@ -1,2 +1,14 @@
+# compiled binaries
 client
 server
+*.exe
+
+# tailscale node credentials and state
+tsnet-state/
+
+# uploaded files storage
+storage-data/
+
+# environment files
+.env
+
