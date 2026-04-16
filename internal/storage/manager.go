@@ -43,3 +43,19 @@ func (m *Manager) Save(filename string, src io.Reader) error {
 
 	return nil
 }
+
+func (m *Manager) GetPath(filename string) (string, error) {
+	safe := filepath.Base(filename)
+	if safe == "." || safe == "/" {
+		return "", fmt.Errorf("invalid filename")
+	}
+
+	fullPath := filepath.Join(m.baseDir, safe)
+
+	// Checking if the file actually exists before returning the path
+	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		return "", fmt.Errorf("file not found: %s", safe)
+	}
+
+	return fullPath, nil
+}

@@ -16,14 +16,22 @@ set TS_AUTHKEY=<your-auth-key>
 
 Once you have set the TS_AUTHKEY environment variable, you can execute the server binary.
 
+## Command to run the server binary locally
+
+```
+go run ./cmd/server
+```
 
 ## Sample commands from client
+
+```
+curl http://storage-node:8080/health
+```
 
 ```
 curl -X POST -F "file=@/path/to/file" http://storage-node:8080/upload
 ```
 
 ```
-curl http://storage-node:8080/health
+curl http://storage-node:8080/download/filename.txt -o /path/to/save/saved_filename.txt
 ```
-
