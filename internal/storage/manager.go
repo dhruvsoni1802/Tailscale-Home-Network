@@ -97,3 +97,21 @@ func (m *Manager) List() ([]FileInfo, error) {
 
 	return files, nil
 }
+
+func (m *Manager) Delete(filename string) error {
+	safe := filepath.Base(filename)
+	if safe == "." || safe == "/" {
+		return fmt.Errorf("invalid filename")
+	}
+
+	fullPath := filepath.Join(m.baseDir, safe)
+
+	if err := os.Remove(fullPath); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("file not found: %s", safe)
+		}
+		return fmt.Errorf("failed to delete file: %w", err)
+	}
+
+	return nil
+}

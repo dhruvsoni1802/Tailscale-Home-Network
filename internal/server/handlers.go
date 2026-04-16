@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -87,4 +88,29 @@ func (s *Server) handleList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
+	filename := r.PathValue("filename")
+	if filename == "" {
+		http.Error(w, "filename is required", http.StatusBadRequest)
+		return
+	}
 
+	if err := s.storage.Delete(filename); err != nil {
+		// Distinguishing between not found and a real server error
+		if strings.Contains(err.Error(), "file not found") {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		log.Printf("delete error: %v", err)
+		http.Error(w, "failed to delete file", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("deleted: %s", filename)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":   "deleted",
+		"filename": filename,
+	})
+}
