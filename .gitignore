@@ -1,6 +1,6 @@
 # compiled binaries
-client
-server
+/client
+/server
 *.exe
 
 # tailscale node credentials and state
