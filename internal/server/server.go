@@ -6,22 +6,31 @@ import (
 	"net/http"
 
 	"github.com/dhruvsoni1802/Tailscale-Home-Network/internal/storage"
+	"tailscale.com/client/local"
 	"tailscale.com/tsnet"
 )
 
 // Server is the main server struct
 type Server struct {
-	tsnet *tsnet.Server
-	http  *http.Server
-	storage *storage.Manager
+	tsnet       *tsnet.Server
+	http        *http.Server
+	storage     *storage.Manager
+	localClient *local.Client
 }
 
 // New creates a new server instance
-func New(ts *tsnet.Server, store *storage.Manager) *Server {
-	return &Server{
-		tsnet: ts,
-		storage: store,
+func New(ts *tsnet.Server, store *storage.Manager) (*Server, error) {
+
+	// Getting the local client
+	lc, err := ts.LocalClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get local client: %w", err)
 	}
+	return &Server{
+		tsnet:       ts,
+		storage:     store,
+		localClient: lc,
+	}, nil
 }
 
 // Start starts the server

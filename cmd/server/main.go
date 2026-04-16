@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"os"
 
@@ -15,6 +16,17 @@ import (
 func main() {
 	cfg := config.Default()
 	cfg.AuthKey = os.Getenv("TS_AUTHKEY")
+
+	// Writing logs to both terminal and file simultaneously
+	logFile, err := os.OpenFile("tailstore.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("failed to open log file: %v", err)
+	}
+	defer logFile.Close()
+
+	// Setting the output to both terminal and file
+	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
+	log.SetFlags(log.Ldate | log.Ltime | log.LUTC)
 
 	if cfg.AuthKey != "" {
 		log.Println("auth key found, registering node")
@@ -46,7 +58,11 @@ func main() {
 	}
 
 	//Starting an HTTP server on top of tailnet node
-	srv := server.New(ts, store)
+	srv, err := server.New(ts, store)
+	if err != nil {
+		log.Fatalf("failed to create server: %v", err)
+	}
+	
 	if err := srv.Start(); err != nil {
 		log.Fatalf("server error: %v", err)
 	}

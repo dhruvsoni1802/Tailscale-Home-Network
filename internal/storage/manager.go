@@ -19,6 +19,16 @@ type FileInfo struct {
 	ModifiedAt string `json:"modified_at"`
 }
 
+//Helper function to return the storage path for a specific user and creating the storage directory if it doesn't exist
+func (m *Manager) userDir(user string) (string, error) {
+	dir := filepath.Join(m.baseDir, user)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return "", fmt.Errorf("failed to create user dir: %w", err)
+	}
+
+	return dir, nil
+}
+
 
 func NewManager(baseDir string) (*Manager, error) {
 	
@@ -30,7 +40,7 @@ func NewManager(baseDir string) (*Manager, error) {
 	return &Manager{baseDir: baseDir}, nil
 }
 
-func (m *Manager) Save(filename string, src io.Reader) error {
+func (m *Manager) Save(user,filename string, src io.Reader) error {
 	// Stripping any directory components from filename to prevent path traversal attacks
 	safe := filepath.Base(filename)
 
@@ -38,7 +48,12 @@ func (m *Manager) Save(filename string, src io.Reader) error {
 		return fmt.Errorf("invalid filename")
 	}
 
-	dst, err := os.Create(filepath.Join(m.baseDir, safe))
+	dir, err := m.userDir(user)
+	if err != nil {
+		return err
+	}
+
+	dst, err := os.Create(filepath.Join(dir, safe))
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
@@ -53,13 +68,18 @@ func (m *Manager) Save(filename string, src io.Reader) error {
 	return nil
 }
 
-func (m *Manager) GetPath(filename string) (string, error) {
+func (m *Manager) GetPath(user,filename string) (string, error) {
 	safe := filepath.Base(filename)
 	if safe == "." || safe == "/" {
 		return "", fmt.Errorf("invalid filename")
 	}
 
-	fullPath := filepath.Join(m.baseDir, safe)
+	dir, err := m.userDir(user)
+	if err != nil {
+		return "", err
+	}
+
+	fullPath := filepath.Join(dir, safe)
 
 	// Checking if the file actually exists before returning the path
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
@@ -69,8 +89,14 @@ func (m *Manager) GetPath(filename string) (string, error) {
 	return fullPath, nil
 }
 
-func (m *Manager) List() ([]FileInfo, error) {
-	entries, err := os.ReadDir(m.baseDir)
+func (m *Manager) List(user string) ([]FileInfo, error) {
+
+	dir, err := m.userDir(user)
+	if err != nil {
+		return nil, err
+	}
+
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read storage dir: %w", err)
 	}
@@ -98,13 +124,18 @@ func (m *Manager) List() ([]FileInfo, error) {
 	return files, nil
 }
 
-func (m *Manager) Delete(filename string) error {
+func (m *Manager) Delete(user,filename string) error {
 	safe := filepath.Base(filename)
 	if safe == "." || safe == "/" {
 		return fmt.Errorf("invalid filename")
 	}
 
-	fullPath := filepath.Join(m.baseDir, safe)
+	dir, err := m.userDir(user)
+	if err != nil {
+		return err
+	}
+
+	fullPath := filepath.Join(dir, safe)
 
 	if err := os.Remove(fullPath); err != nil {
 		if os.IsNotExist(err) {

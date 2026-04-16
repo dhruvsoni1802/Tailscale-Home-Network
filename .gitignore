@@ -12,3 +12,7 @@ storage-data/
 # environment files
 .env
 
+# audit log
+tailstore.log
+
+

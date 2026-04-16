@@ -43,3 +43,10 @@ List files command
 ```
 curl http://storage-node:8080/files
 ```
+
+Delete file command
+```
+curl -X DELETE http://storage-node:8080/files/filename.txt
+```
+
+All the commands above are authenticated using the local client. So you need to be on the same Tailscale network as the server.
