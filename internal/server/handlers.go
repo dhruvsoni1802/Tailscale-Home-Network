@@ -70,4 +70,21 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filePath)
 }
 
+func (s *Server) handleList(w http.ResponseWriter, r *http.Request) {
+	files, err := s.storage.List()
+	if err != nil {
+		log.Printf("list error: %v", err)
+		http.Error(w, "failed to list files", http.StatusInternalServerError)
+		return
+	}
+
+	resp := map[string]any{
+		"files": files,
+		"total": len(files),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
 

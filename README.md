@@ -24,14 +24,22 @@ go run ./cmd/server
 
 ## Sample commands from client
 
+Health check command
 ```
 curl http://storage-node:8080/health
 ```
 
+Upload file command
 ```
 curl -X POST -F "file=@/path/to/file" http://storage-node:8080/upload
 ```
 
+Download file command
 ```
 curl http://storage-node:8080/download/filename.txt -o /path/to/save/saved_filename.txt
+```
+
+List files command
+```
+curl http://storage-node:8080/files
 ```

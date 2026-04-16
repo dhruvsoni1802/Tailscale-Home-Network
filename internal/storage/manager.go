@@ -5,11 +5,20 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Manager struct {
 	baseDir string
 }
+
+// FileInfo holds metadata about a stored file
+type FileInfo struct {
+	Name       string `json:"name"`
+	Size       int64  `json:"size"`
+	ModifiedAt string `json:"modified_at"`
+}
+
 
 func NewManager(baseDir string) (*Manager, error) {
 	
@@ -58,4 +67,33 @@ func (m *Manager) GetPath(filename string) (string, error) {
 	}
 
 	return fullPath, nil
+}
+
+func (m *Manager) List() ([]FileInfo, error) {
+	entries, err := os.ReadDir(m.baseDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read storage dir: %w", err)
+	}
+
+	files := []FileInfo{}
+
+	for _, entry := range entries {
+		// Skipping subfolders as we only track files
+		if entry.IsDir() {
+			continue
+		}
+
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+
+		files = append(files, FileInfo{
+			Name:       info.Name(),
+			Size:       info.Size(),
+			ModifiedAt: info.ModTime().Format(time.RFC3339),
+		})
+	}
+
+	return files, nil
 }
