@@ -16,13 +16,34 @@ set TS_AUTHKEY=<your-auth-key>
 
 Once you have set the TS_AUTHKEY environment variable, you can execute the server binary.
 
+## Usage for a tailstore client
+
+Whenever you are executing the server binary on the Mac or Windows machine, you need to set the TS_AUTHKEY environment variable. You can get the auth key from the Tailscale dashboard.
+
+To set the TS_AUTHKEY environment variable, you can run the following command on Mac:
+```
+export TS_AUTHKEY=<your-auth-key>
+```
+
+On Windows, you can set the TS_AUTHKEY environment variable by running the following command:
+```
+set TS_AUTHKEY=<your-auth-key>
+```
+
+Once you have set the TS_AUTHKEY environment variable, you can execute the client binary.
+
 ## Command to run the server binary locally
 
 ```
 go run ./cmd/server
 ```
 
-## Sample commands from client
+## Command to run the client binary locally
+```
+go run ./cmd/client
+```
+
+## Sample commands from client to interact with the storage node directly
 
 Health check command
 ```
@@ -50,3 +71,5 @@ curl -X DELETE http://storage-node:8080/files/filename.txt
 ```
 
 All the commands above are authenticated using the local client. So you need to be on the same Tailscale network as the server.
+
+

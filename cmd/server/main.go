@@ -14,7 +14,7 @@ import (
 
 
 func main() {
-	cfg := config.Default()
+	cfg := config.DefaultServer()
 	cfg.AuthKey = os.Getenv("TS_AUTHKEY")
 
 	// Writing logs to both terminal and file simultaneously
