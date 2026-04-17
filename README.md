@@ -43,7 +43,7 @@ go run ./cmd/server
 go run ./cmd/client
 ```
 
-## Sample commands from client to interact with the storage node directly
+## Sample commands from a direct tailscale client to interact with the storage node
 
 Health check command
 ```
@@ -72,4 +72,30 @@ curl -X DELETE http://storage-node:8080/files/filename.txt
 
 All the commands above are authenticated using the local client. So you need to be on the same Tailscale network as the server.
 
+## Sample commands from a tailscale client from the binary to interact with the storage node
+
+Health check command
+```
+curl http://localhost:4000/api/health
+```
+
+Upload file command
+```
+curl -X POST -F "file=@/path/to/file" http://localhost:4000/api/upload
+```
+
+Download file command
+```
+curl http://localhost:4000/api/download/filename.txt -o /path/to/save/saved_filename.txt
+```
+
+List files command
+```
+curl http://localhost:4000/api/files
+```
+
+Delete file command
+```
+curl -X DELETE http://localhost:4000/api/files/filename.txt
+```
 
