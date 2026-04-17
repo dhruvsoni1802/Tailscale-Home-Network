@@ -1,4 +1,4 @@
-# Tailscale Home Network
+# Tailstore
 This is a simple project that allows you to share files between your devices using Tailscale.
 
 ## Usage for Storage Node server
