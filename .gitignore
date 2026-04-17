@@ -15,4 +15,6 @@ storage-data/
 # audit log
 tailstore.log
 
-
+# build output
+bin/
+ui/dist/
