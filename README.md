@@ -32,15 +32,33 @@ set TS_AUTHKEY=<your-auth-key>
 
 Once you have set the TS_AUTHKEY environment variable, you can execute the client binary.
 
+## Command to build the server and client binaries
+
+```
+chmod +x build.sh
+./build.sh
+```
+
 ## Command to run the server binary locally
 
 ```
 go run ./cmd/server
 ```
 
+## Command to run server binary
+
+```
+./server
+```
+
 ## Command to run the client binary locally
 ```
 go run ./cmd/client
+```
+
+## Command to run the client binary
+```
+./client
 ```
 
 ## Sample commands from a direct tailscale client to interact with the storage node
